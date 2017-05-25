@@ -1,195 +1,179 @@
 ﻿FORMAT==100
 SKIPCHECK;
 
-#['xOBAssets', {'Actual','Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-#IF( NUMBR( SUBST( !Time Period, 1, 4 ) ) <= 2014,
-#	STET,
-#	IF( ELISANC( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR) > 0,
-#		IF( SUBST( !Time Period, 5, 2 ) @= '01',
-#			DB( 'PCR', 'TOTASSET', !Entity, !Organizational Unit PCR, '00', 'CIF Allocation Sources', !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', 'All Currencies', 'USD' ),
-#			STET ),
-#		STET ) );
-#['xOBPortfolio', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-#IF( NUMBR( SUBST( !Time Period, 1, 4 ) ) <= 2014,
-#	STET,
-#	IF( ELISANC( 'Organizational Unit PCR', 'Cash Org Unit Allocations', !Organizational Unit PCR ) > 0,
-#		IF( SUBST( !Time Period, 5, 2 ) @= '01',
-#			DB( 'PCR', 'Total Portfolio for Key Measures', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'All Currencies', 'USD' ),
-#			CONTINUE ),
-#		STET ) );
+#['xOBAssets',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N: IF(NUMBR(SUBST(!Time Period, 1, 4)) <= 2014, STET,
+#   IF ( ELISANC ( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR) > 0 , IF(SUBST(!Time Period, 5, 2) @= '01',
+#      DB('PCR','TOTASSET',!Entity,!Organizational Unit PCR,'00','CIF Allocation Sources',!Version,STR(NUMBR(SUBST(!Time Period, 1, 4))-1,4,0) | '12','All Currencies','USD'),STET), STET));
+#['xOBPortfolio',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N: IF(NUMBR(SUBST(!Time Period, 1, 4)) <= 2014, STET,
+#   IF ( ELISANC ( 'Organizational Unit PCR', 'Cash Org Unit Allocations', !Organizational Unit PCR) > 0 , IF(SUBST(!Time Period, 5, 2) @= '01',
+#      DB('PCR','Total Portfolio for Key Measures',!Entity,!Organizational Unit PCR,'All Program Types','All Datasources including PCA',!Version,ATTRS('Time Period', !Time Period, 'Prior Calendar Period'),'All Currencies','USD'), CONTINUE),STET));
 
-[{'xHQ_RATE_FIX', 'xCOUP_RATE_FIX', 'xHQ_RATE_FLT', 'xCOUP_RATE_FLT', 'xBMS', 'xREAL_PTS', 'xEUR_HEDGE', 'xCOMM_FEES'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-IF( SUBST( !Organizational Unit PCR, 1, 6 ) @= '00000-' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
-	STET,
-	0 );
+[{'xHQ_RATE_FIX','xCOUP_RATE_FIX','xHQ_RATE_FLT','xCOUP_RATE_FLT','xBMS','xREAL_PTS','xEUR_HEDGE','xCOMM_FEES'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	IF ( subst ( !Organizational Unit PCR, 1,6) @= '00000-' &  !Entity @= ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
+		stet,
+		0);
+[{'xHQ_RATE_FIX','xCOUP_RATE_FIX','xHQ_RATE_FLT','xCOUP_RATE_FLT','xBMS','xREAL_PTS','xEUR_HEDGE','xCOMM_FEES'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N: 0;
 
-[{'xHQ_RATE_FIX', 'xCOUP_RATE_FIX', 'xHQ_RATE_FLT', 'xCOUP_RATE_FLT', 'xBMS', 'xREAL_PTS', 'xEUR_HEDGE', 'xCOMM_FEES'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N: 0;
+['Input Accounts':'Managed Assets',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	IF ( !Entity @= ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
+		stet,
+		0);
+['Input Accounts':'Managed Assets',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N: 0;
 
-['Input Accounts':'Managed Assets', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-IF( !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
-	STET,
-	0 );
-
-['Input Accounts':'Managed Assets', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N: 0;
-
-##QUEBIT RULE CHANGE - Changed on 2017/05/22
-#CHANGE MADE TO OPEN UP PCR INPUTS PERIODS
+##QUEBIT RULE CHANGE - Changed on 4/27/2017
 ['xCash200M', {'P3', 'WU'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 IF( !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & ELLEV( 'Time Period', !Time Period ) = 0,
 	STET,
 	0 );
 
-##ORIGINAL CODE FOR xCash200M
+##ORIGINAL xCash200M RULE
 #['xCash200M', {'P3', 'WU'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 #IF( !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 #	STET,
 #	0 );
 
-['xCash200M', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N: 0;
+['xCash200M',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N: 0;
 
-##QUEBIT RULE CHANGE - Changed on 2017/05/22
-#CHANGE MADE TO OPEN UP PCR INPUTS PERIODS
+##QUEBIT RULE CHANGE - Changed on 4/27/2017
 ['PCR 1 Cash Threshold', 'P3', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & ELLEV( 'Time Period', !Time Period ) = 0,
 	STET,
 	0 );
 
-##QUEBIT RULE CHANGE - Changed on 2017/05/22
-#CHANGE MADE TO OPEN UP PCR INPUTS PERIODS
+##QUEBIT RULE CHANGE - Changed on 4/27/2017
 ['Federal Tax Rate', 'P3', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 	STET,
 	0 );
 
-##ORIGINAL CODE FOR PCR 1 CASH THRESHOLD AND FEDERAL TAX RATE
+##ORIGINAL PCR 1 Cash Threshold AND Federal Tax Rate RULE
 #[{'PCR 1 Cash Threshold', 'Federal Tax Rate'}, 'P3', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 #IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 #	STET,
 #	0 );
 
-##QUEBIT RULE CHANGE - Changed on 2017/05/22
-#CHANGE MADE TO COMBINE 2 RULES INTO 1
+##QUEBIT RULE CHANGE - Changed on 4/27/2017
 ['Federal Tax Rate', 'Entity':{'GV', 'LM'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 	STET,
 	0 );
 
-##ORIGINAL CODE FOR FEDERAL TAX RATE FOR ENTITY GV
+##ORIGINAL Federal Tax Rate for Entity GV
 #['Federal Tax Rate', 'GV', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 #IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 #	STET,
 #	0 );
 
-##ORIGINAL CODE FOR FEDERAL TAX RATE FOR ENTITY LM
+##ORIGINAL Federal Tax Rate for Entity LM
 #['Federal Tax Rate', 'Entity':'LM', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
 #IF( SUBST( !Organizational Unit PCR, 1, 5 ) @= '00000' & !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) & SUBST( !Time Period, 5, 2 ) @= '12',
 #	STET,
 #	0 );
 
-[{'PCR 1 Cash Threshold', 'Federal Tax Rate'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N: 0;
+[{'PCR 1 Cash Threshold','Federal Tax Rate'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:0;
 
-['CIF FX Points', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-IF( !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
-	STET,
-	0 );
+
+['CIF FX Points',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	IF ( !Entity @= ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) ,
+		stet,
+		0);
 
 #AFR weighted avg Fixed and Floating rates
-['Weighted AVG Rate for AFR', 'Entity':{'P3', 'WU'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = C: 0;
-
-['Weighted AVG Rate for AFR', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = C:
-IF( ELLEV( 'Entity', !Entity ) = 0 & ELLEV( 'Time Period', !Time Period ) = 0,
-	CONTINUE,
-	0 );
-
-['Weighted AVG Rate for AFR', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = C:
-IF( !Organizational Unit PCR @= '00000-' | !Entity,
-	['Weighted COUP_RATE_FIX'] + ['Weighted COUP_RATE_FLT'] + ['xCOMM_FEES', 'P3', '00000-P3'],
-	DB( 'PCR Inputs', !Input Accounts, !Entity, '00000-' | !Entity, !Version, !Time Period ) );
-
-[{'Weighted COUP_RATE_FIX', 'Weighted COUP_RATE_FLT'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-IF( !Organizational Unit PCR @= '00000-' | !Entity,
-	CONTINUE,
-	0 );
-
-['Weighted COUP_RATE_FIX', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-	['xLoan Balance for AFR Fixed'] \ ['Loan Balance for AFR'] * ['xCOUP_RATE_FIX', 'P3', '00000-P3'];
-
-['Weighted COUP_RATE_FLT', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-	['xLoan Balance for AFR Floating'] \ ['Loan Balance for AFR'] * ['xCOUP_RATE_FLT', 'P3', '00000-P3'];
+['Weighted AVG Rate for AFR','Entity':{'P3','WU'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = C: 0;
+['Weighted AVG Rate for AFR',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = C:
+ 	IF ( ELLEV ( 'Entity', !Entity ) = 0 & ELLEV ( 'Time Period', !Time Period ) = 0 ,
+		continue,
+		0 );
+['Weighted AVG Rate for AFR',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = C:
+	IF ( !Organizational Unit PCR @= '00000-' | !Entity,
+		['weighted COUP_RATE_FIX']+ ['weighted COUP_RATE_FLT'] + ['xCOMM_FEES','P3','00000-P3'],
+		DB('PCR Inputs',!Input Accounts,!Entity,'00000-' | !Entity,!Version,!Time Period));
+[{'weighted COUP_RATE_FIX','weighted COUP_RATE_FLT'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	IF ( !Organizational Unit PCR @= '00000-' | !Entity,
+		continue,
+		0);
+['weighted COUP_RATE_FIX',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	['xLoan Balance for AFR Fixed'] \ ['Loan Balance for AFR'] * ['xCOUP_RATE_FIX','P3','00000-P3'];
+['weighted COUP_RATE_FLT',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	['xLoan Balance for AFR Floating'] \ ['Loan Balance for AFR'] * ['xCOUP_RATE_FLT','P3','00000-P3'];
 
 #Mandatory RULE preventing input in non-valid Org Unit / Entity combinations
-[{'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] = N:
-IF( !Entity @= ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ),
-	STET,
-	0 );
+[{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] = N:
+	IF ( !Entity @= ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ) ,
+		stet,
+		0);
 
 FEEDERS;
+
 #[{'xOBPortfolio','Federal Tax Rate','xCash200M','PCR 1 Cash Threshold','xStock','xDividend','xOBProfitEmployed'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
-[{'xOBPortfolio', 'Federal Tax Rate', 'xCash200M', 'PCR 1 Cash Threshold', 'xStock', 'xDividend'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '01', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '02', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '03', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '04', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '04', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '05', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '06', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '07', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '08', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '09', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '10', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '11', 'USD', 'Transaction Currency' ),
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '12', 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '01', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '02', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '03', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '04', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '04', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '05', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '06', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '07', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '08', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '09', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '10', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '11', 'Source Value' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, SUBST( !Time Period, 1, 4 ) | '12', 'Source Value' );
+[{'xOBPortfolio','Federal Tax Rate','xCash200M','PCR 1 Cash Threshold','xStock','xDividend'},{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '01', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '02', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '03', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '04', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '04', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '05', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '06', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '07', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '08', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '09', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '10', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '11', 'USD','Transaction Currency'),
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '12', 'USD','Transaction Currency'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '01', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '02', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '03', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '04', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '04', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '05', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '06', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '07', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '08', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '09', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '10', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '11', 'Source Value'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,SUBST ( !Time Period, 1,4) | '12', 'Source Value');
 
-['xCOUP_RATE_FLT', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	['Weighted COUP_RATE_FLT', 'LE.2020-12.P0G', 'CFSC'];
+['xCOUP_RATE_FLT',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	['weighted COUP_RATE_FLT','LE.2020-12.P0G','CFSC'];
+['xCOUP_RATE_FIX',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	['weighted COUP_RATE_Fix','LE.2020-12.P0G','CFSC'];
 
-['xCOUP_RATE_FIX', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	['Weighted COUP_RATE_Fix', 'LE.2020-12.P0G', 'CFSC'];
+[{'xHQ_RATE_FIX','xCOUP_RATE_FIX','xHQ_RATE_FLT','xCOUP_RATE_FLT','xBMS','xREAL_PTS','EUR_HEDGE','xCOMM_FEES'},
+{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','Debt Rate' ,!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations','Debt Rate' ,!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'Source Value' ),
+	DB('PCR', '2 Month Avg Fixed %',!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations', '2 Month Avg Fixed %' ,!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'Source Value' ),
+	DB('PCR', '2 Month Avg Floating %',!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations', '2 Month Avg Floating %' ,!Entity,'FPD','00' ,'allocation calculation' ,!Version ,!Time Period  ,'Source Value' );
 
-[{'xHQ_RATE_FIX', 'xCOUP_RATE_FIX', 'xHQ_RATE_FLT', 'xCOUP_RATE_FLT', 'xBMS', 'xREAL_PTS', 'EUR_HEDGE', 'xCOMM_FEES'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', 'Debt Rate', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period , 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', 'Debt Rate', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ),
-	DB( 'PCR', '2 Month Avg Fixed %', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', '2 Month Avg Fixed %', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ),
-	DB( 'PCR', '2 Month Avg Floating %', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', '2 Month Avg Floating %', !Entity, 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+['Debt Rate PCR Cash',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','Debt Rate' ,!Entity, !Organizational Unit PCR,'00' ,'allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations','Debt Rate' ,!Entity,!Organizational Unit PCR,'00' ,'allocation calculation' ,!Version ,!Time Period  ,'Source Value' );
 
-['Debt Rate PCR Cash', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', 'Debt Rate', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', 'Debt Rate', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+['xLoan Balance for AFR Floating',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','Interest Expense AFR (Pt I) for Allocation',!Entity, !Organizational Unit PCR,'00' ,'Allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations','Interest Expense AFR (Pt I) for Allocation',!Entity,!Organizational Unit PCR,'00' ,'Allocation calculation' ,!Version ,!Time Period  ,'Source Value' ),
+	DB('PCR','Interest Expense AFR (Pt II) for Allocation',!Entity, !Organizational Unit PCR,'00' ,'Allocation calculation' ,!Version ,!Time Period  ,'USD' ,'Transaction Currency' ),
+	DB('PCR Allocations','Interest Expense AFR (Pt II) for Allocation',!Entity,!Organizational Unit PCR,'00' ,'Allocation calculation' ,!Version ,!Time Period  ,'Source Value' );
 
-['xLoan Balance for AFR Floating', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', 'Interest Expense AFR (Pt I) for Allocation', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', 'Interest Expense AFR (Pt I) for Allocation', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ),
-	DB( 'PCR', 'Interest Expense AFR (Pt II) for Allocation', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', 'Interest Expense AFR (Pt II) for Allocation', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+['Adjustment to Payables Balance G00010P300',{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','2 Month AVG Payables Balance',!Entity,!Organizational Unit PCR,'00','Allocation Calculation',!Version,!Time Period,'USD','Transaction Currency'),
+	DB('PCR Allocations','2 Month AVG Payables Balance',!Entity,!Organizational Unit PCR,'00','Allocation Calculation',!Version,!Time Period,'Source Value');
 
-['Adjustment to Payables Balance G00010P300', {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', '2 Month AVG Payables Balance', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'USD', 'Transaction Currency' ),
-	DB( 'PCR Allocations', '2 Month AVG Payables Balance', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+[{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,!Time Period,IF ( ATTRS ( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y','not applicable','USD'),'Transaction Currency'),
+	DB('PCR Allocations',!Input Accounts,!Entity,!Organizational Unit PCR,'00','Input',!Version,!Time Period,'Source Value'),
+	DB('GLS Reporting',!Input Accounts ,!Entity , subst(!Organizational Unit PCR,1,5), !Version, !Time Period,'USD');
 
-[{'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, !Time Period, IF( ATTRS( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y', 'Not Applicable', 'USD' ), 'Transaction Currency' ),
-	DB( 'PCR Allocations', !Input Accounts, !Entity, !Organizational Unit PCR, '00', 'Input', !Version, !Time Period, 'Source Value'),
-	DB( 'GLS Reporting', !Input Accounts , !Entity, SUBST( !Organizational Unit PCR, 1, 5 ), !Version, !Time Period, 'USD' );
+[{'xPD - CUST RETAIL $','xPD - DLR RETAIL $','xPD - DLR WHLS $','xPD - DLR PURCH $','xPD - SYND $','xPD - CUST LEASE $','xPD - DLR OP LEASE $','xPD - PLUG $'},
+{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','xPD $',!Entity,!Organizational Unit PCR,'00','Input',!Version,!Time Period,IF ( ATTRS ( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y','not applicable','USD'),'Transaction Currency'),
+	DB('GLS Reporting','xPD $' ,!Entity , subst(!Organizational Unit PCR,1,5), !Version, !Time Period,'USD');
 
-[{'xPD - CUST RETAIL $', 'xPD - DLR RETAIL $', 'xPD - DLR WHLS $', 'xPD - DLR PURCH $', 'xPD - SYND $', 'xPD - CUST LEASE $', 'xPD - DLR OP LEASE $', 'xPD - PLUG $'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', 'xPD $', !Entity, !Organizational Unit PCR, '00', 'Input', !Version, !Time Period, IF( ATTRS( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y', 'Not Applicable', 'USD' ), 'Transaction Currency' ),
-	DB( 'GLS Reporting', 'xPD $', !Entity, SUBST( !Organizational Unit PCR, 1, 5 ), !Version, !Time Period, 'USD' );
 
-[{'xPD - CUST RETAIL PORT', 'xPD - DLR RETAIL PORT', 'xPD - DLR WHLS PORT', 'xPD - DLR PURCH PORT', 'xPD - SYND PORT', 'xPD - CUST LEASE PORT', 'xPD - DLR OP LEASE PORT', 'xPD - PLUG PORT'}, {'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}] =>
-	DB( 'PCR', 'xPD - PORTFOLIO', !Entity, !Organizational Unit PCR, '00', 'Input', !Version, !Time Period, IF( ATTRS( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y', 'Not Applicable', 'USD' ), 'Transaction Currency' ),
-	DB( 'GLS Reporting', 'xPD - PORTFOLIO', !Entity, SUBST( !Organizational Unit PCR, 1, 5 ), !Version, !Time Period, 'USD' );
+[{'xPD - CUST RETAIL PORT','xPD - DLR RETAIL PORT','xPD - DLR WHLS PORT','xPD - DLR PURCH PORT','xPD - SYND PORT','xPD - CUST LEASE PORT','xPD - DLR OP LEASE PORT','xPD - PLUG PORT'},
+{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'}] =>
+	DB('PCR','xPD - PORTFOLIO',!Entity,!Organizational Unit PCR,'00','Input',!Version,!Time Period,IF ( ATTRS ( 'Input Accounts', !Input Accounts, 'Is Non-Currency Input' ) @= 'Y','not applicable','USD'),'Transaction Currency'),
+	DB('GLS Reporting','xPD - PORTFOLIO',!Entity,subst(!Organizational Unit PCR,1,5),!Version,!Time Period,'USD');
