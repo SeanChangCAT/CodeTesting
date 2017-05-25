@@ -54,8 +54,7 @@ IF( ELLEV( 'Version', !Version ) = 0,
 '201701 YTD Variance', '201702 YTD Variance', '201703 YTD Variance', '201704 YTD Variance', '201705 YTD Variance', '201706 YTD Variance', '201707 YTD Variance', '201708 YTD Variance', '201709 YTD Variance', '201710 YTD Variance', '201711 YTD Variance',
 '201801 YTD Variance', '201802 YTD Variance', '201803 YTD Variance', '201804 YTD Variance', '201805 YTD Variance', '201806 YTD Variance', '201807 YTD Variance', '201808 YTD Variance', '201809 YTD Variance', '201810 YTD Variance', '201811 YTD Variance'}] = C: 0;
 
-[{'Act vs Plan %', 'Act @ BP Rate', 'Act @ Prior Month Rate', 'Act vs Act @ Prior Month Rate', 'Act vs Plan Var Excl FX', 'Act vs Plan Var',
-'Act vs Plan FX Var', 'Act vs PY Act Var Excl FX', 'Act vs PY Act FX Var', 'Act vs PY Act Var', 'Act vs PY Act Var Excl FX', 'Act vs Act @ BP Rate'}] = 0;
+[{'Act vs Plan %', 'Act @ BP Rate', 'Act @ Prior Month Rate', 'Act vs Act @ Prior Month Rate', 'Act vs Plan Var Excl FX', 'Act vs Plan Var', 'Act vs Plan FX Var', 'Act vs PY Act Var Excl FX', 'Act vs PY Act FX Var', 'Act vs PY Act Var', 'Act vs PY Act Var Excl FX', 'Act vs Act @ BP Rate'}] = 0;
 
 [{'Prior Month Variance (%)', 'Prior Year Variance (%)', 'QTD Variance (%)', 'Prior Year QTD Variance (%)', 'YTD Variance (%)'}] = 0;
 #endregion
@@ -65,8 +64,8 @@ IF( ELLEV( 'Version', !Version ) = 0,
 
 ['Calculated Tax %'] = C:
 IF( ELLEV( 'Time Period', !Time Period ) = 0,
-	DB( 'PCR Allocations', 'TOTTAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | 'YTD', !Allocations Measure )
-	\ ( ( -1 )
+	DB( 'PCR Allocations', 'TOTTAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure )
+	\ ( ( - 1 )
 	* DB( 'PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure ) ),
 	0 );
 
@@ -87,31 +86,31 @@ IF( ELLEV( 'Time Period', !Time Period ) = 0,
 #endregion
 
 #region CIF
-['CIF FX Points','00','Datasource':'Input','Entity':{'DC','DU','EP','FR','FV','HA','JD','KJ','KN','L7','LK','OC','UT','YH','ZX'},'Source Value']= N:
-	if (subst(!Organizational Unit PCR,7,2) @= !Entity,
-		DB('PCR Inputs', !Account PCR, !Entity,!Organizational Unit PCR, !Version,!Time Period),
-		Continue);
+['CIF FX Points', '00', 'Datasource':'Input', 'Entity':{'DC', 'DU', 'EP', 'FR', 'FV', 'HA', 'JD', 'KJ', 'KN', 'L7', 'LK', 'OC', 'UT', 'YH', 'ZX'}, 'Source Value'] = N:
+IF( SUBST( !Organizational Unit PCR, 7, 2 ) @= !Entity,
+	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period ),
+	CONTINUE );
 
-['OBDeferredTax']=C:
-	DB('PCR Allocations','DEFERINCTAX',!Entity,!Organizational Unit PCR,!Program Type,!Datasource,!Version, STR ( NUMBR ( SUBST ( !Time Period,1,4 )) -1, 4,0) | '12',!Allocations Measure);
+['OBDeferredTax'] = C:
+	DB( 'PCR Allocations', 'DEFERINCTAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', !Allocations Measure );
 
-['OBAssets']=C:
-	DB('PCR Allocations','TOTASSET',!Entity,!Organizational Unit PCR,!Program Type,!Datasource,!Version, STR ( NUMBR ( SUBST ( !Time Period,1,4 )) -1, 4,0) | '12',!Allocations Measure);
+['OBAssets'] = C:
+	DB( 'PCR Allocations', 'TOTASSET', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', !Allocations Measure );
 
-['OB CIF IC Loans']=C:
-	DB('PCR Allocations','CIF IC Loans Allocated to CIF Org Units',!Entity,!Organizational Unit PCR,!Program Type,!Datasource,!Version, STR ( NUMBR ( SUBST ( !Time Period,1,4 )) -1, 4,0) | '12',!Allocations Measure);
+['OB CIF IC Loans'] = C:
+	DB( 'PCR Allocations', 'CIF IC Loans Allocated to CIF Org Units', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', !Allocations Measure );
 
 #FedIncTaxRate & Tax for CIF Org Units
-[{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'},'Federal Tax Rate','Datasource':'Input','Source Value']= N:
-	IF ( ELISANC ( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR) > 0 ,
-		DB('PCR Inputs', 'Federal Tax Rate','GV','00000-GV', !Version,subst(!Time Period,1,4) | '12'),
-		continue);
+[{'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}, 'Federal Tax Rate', 'Datasource':'Input', 'Source Value'] = N:
+IF( ELISANC( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR ) > 0,
+	DB( 'PCR Inputs', 'Federal Tax Rate', 'GV', '00000-GV', !Version, SUBST( !Time Period, 1, 4 ) | '12' ),
+	CONTINUE );
 
-[{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'},'Calculated Federal Tax','00','Source Value']= N:
-	IF ( ELISANC ( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR) > 0 ,
-		- DB('PCR Inputs', 'Federal Tax Rate','GV','00000-GV', !Version,subst(!Time Period,1,4) | '12')
-		* DB ('PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, 'All Program Types', !Datasource, !Version,!Time Period ,'Source Value'),
-		continue);
+[{'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}, 'Calculated Federal Tax', '00', 'Source Value'] = N:
+IF( ELISANC( 'Organizational Unit PCR', 'CIF Org Units Allocations', !Organizational Unit PCR ) > 0,
+	- DB( 'PCR Inputs', 'Federal Tax Rate', 'GV', '00000-GV', !Version, SUBST( !Time Period, 1, 4 ) | '12' )
+	* DB( 'PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, 'All Program Types', !Datasource, !Version, !Time Period, 'Source Value' ),
+	CONTINUE );
 #endregion
 
 #region Cash Allocation calculations
@@ -129,447 +128,513 @@ IF( DB( 'PCR Allocations', 'Cash', 'P3 and WU', 'FPD', 'All Program Types', 'All
 #region Interest Expense
 #region Debt - Equity ratio
 #P3 and WU
-['Debt-Equity Ratio','Entity':'P3','Datasource':'Allocation Calculation','Organizational Unit PCR':'00000-P3','00','Source Value']=N:
-	DB('PCR Allocations', 'TOTDEBT', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period, 'Source Value')
-	/DB('PCR Allocations', 'TOTEQUITY', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period, 'Source Value');
+['Debt-Equity Ratio', 'Entity':'P3', 'Datasource':'Allocation Calculation', 'Organizational Unit PCR':'00000-P3', '00', 'Source Value'] = N:
+	DB( 'PCR Allocations', 'TOTDEBT', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	/ DB( 'PCR Allocations', 'TOTEQUITY', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' );
+
 #LM
-['Debt-Equity Ratio','Entity':'LM','Datasource':'Allocation Calculation','00000-LM','00','Source Value']=N:
- 	DB('PCR Allocations', 'TOTDEBT', !Entity, 'FPD', 'All Program Types', 'All Datasources without Allocations', !Version,!Time Period,'Source Value')
-	/DB('PCR Allocations', 'TOTEQUITY', !Entity, 'FPD', 'All Program Types', 'All Datasources without Allocations', !Version,!Time Period,'Source Value');
+['Debt-Equity Ratio', 'Entity':'LM', 'Datasource':'Allocation Calculation', '00000-LM', '00', 'Source Value'] = N:
+	DB( 'PCR Allocations', 'TOTDEBT', !Entity, 'FPD', 'All Program Types', 'All Datasources without Allocations', !Version, !Time Period, 'Source Value' )
+	/ DB( 'PCR Allocations', 'TOTEQUITY', !Entity, 'FPD', 'All Program Types', 'All Datasources without Allocations', !Version, !Time Period, 'Source Value' );
 #endregion
+
 #region Calculated Debt = (total assets + total other liab) / (debt to equity ratio +1) * (debt to equity ratio)
 #P3
-['Entity':'P3','Calculated Debt','Datasource':'Allocation Calculation','00','Source Value']= N:
-	(DB('PCR Allocations', 'TOTASSET',  'P3 and WU',!Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period, 'Source Value')
-    + DB('PCR Allocations', 'TOTOTHLIAB',  'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period,'Source Value') )
-     /(DB('PCR Allocations', 'Debt-Equity Ratio','P3','00000-P3','00', 'Allocation Calculation', !Version,!Time Period,'Source Value') +1 )
-     * DB('PCR Allocations', 'Debt-Equity Ratio','P3','00000-P3','00', 'Allocation Calculation', !Version,!Time Period,'Source Value');
+['Entity':'P3', 'Calculated Debt', 'Datasource':'Allocation Calculation', '00', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTASSET', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' )
+    + DB( 'PCR Allocations', 'TOTOTHLIAB', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' ) )
+	/ ( DB( 'PCR Allocations', 'Debt-Equity Ratio', 'P3', '00000-P3', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ) + 1 )
+	* DB( 'PCR Allocations', 'Debt-Equity Ratio', 'P3', '00000-P3', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+
 #LM
-['Entity':'LM','Calculated Debt','Datasource':'Allocation Calculation','00','Source Value']=N:
-	(DB('PCR Allocations', 'TOTASSET', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-     + DB('PCR Allocations', 'TOTOTHLIAB', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value') )
-     /(DB('PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM','00', 'Allocation Calculation', !Version,!Time Period,'Source Value') +1 )
-     * DB('PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM','00', 'Allocation Calculation', !Version,!Time Period,'Source Value');
+['Entity':'LM', 'Calculated Debt', 'Datasource':'Allocation Calculation', '00', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTASSET', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTOTHLIAB', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' ) )
+	/ ( DB( 'PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ) + 1 )
+	* DB( 'PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
 #endregion
+
 #region Calculated Equity =(total assets + total other liab) / (debt to equity ratio +1)
 #P3 and WU
-['Calculated Equity','Entity':'P3','Datasource':'Allocation Calculation','00','Source Value']=N:
-	(DB('PCR Allocations', 'TOTASSET', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period,'Source Value')
-	+ DB('PCR Allocations', 'TOTOTHLIAB', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version,!Time Period,'Source Value') )
-     /(DB('PCR Allocations', 'Debt-Equity Ratio', 'P3 and WU','00000-P3','00', 'Allocation Calculation', !Version,!Time Period,'Source Value')+1);
+['Calculated Equity', 'Entity':'P3', 'Datasource':'Allocation Calculation', '00', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTASSET', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTOTHLIAB', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources without Allocation Calculation', !Version, !Time Period, 'Source Value' ) )
+	/ ( DB( 'PCR Allocations', 'Debt-Equity Ratio', 'P3 and WU', '00000-P3', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ) + 1 );
+
 #LM
-['Calculated Equity','Entity':'LM','Datasource':'Allocation Calculation','00','Source Value']=N:
-	(DB('PCR Allocations', 'TOTASSET', !Entity, !Organizational Unit PCR,'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-	+ DB('PCR Allocations', 'TOTOTHLIAB', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value') )
-     /(DB('PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM','00', 'Allocation Calculation', !Version,!Time Period,'Source Value')+1) ;
+['Calculated Equity', 'Entity':'LM', 'Datasource':'Allocation Calculation', '00', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTASSET', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTOTHLIAB', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' ) )
+	/ ( DB( 'PCR Allocations', 'Debt-Equity Ratio', !Entity, '00000-LM', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ) + 1 );
 #endregion
+
 #2 Month Avg Debt (for PCR - CASH 1 or PCR - CASH 2) Jan 2014 only
-['2 Month Avg Debt','Entity':{'P3','WU'},'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'},'00','Datasource':'Allocation Calculation','201401']= N:
-	(DB('PCR Allocations', 'TOTDEBT',!Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value')+
-	DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt', 'Entity':{'P3', 'WU'}, 'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'}, '00', 'Datasource':'Allocation Calculation', '201401'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Debt (for PCR - CASH 1 or PCR - CASH 2)
-['2 Month Avg Debt','Entity':{'P3','WU'},'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'},'00','Datasource':'Allocation Calculation']= N:
-	(DB('PCR Allocations', 'TOTDEBT',!Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value')+
-	DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt', 'Entity':{'P3', 'WU'}, 'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'}, '00', 'Datasource':'Allocation Calculation'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Debt
-['2 Month Avg Debt','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	(DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value')
-	+DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Debt After First Round (for PCR - CASH 1 or PCR - CASH 2) Jan 2014 only
-['2 Month Avg Debt After First Round','Entity':{'P3','WU'},'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'},'00','Datasource':'Allocation Calculation','201401']= N:
-	(DB('PCR Allocations', 'TOTDEBT',!Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value')+
-	DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt After First Round', 'Entity':{'P3', 'WU'}, 'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'}, '00', 'Datasource':'Allocation Calculation', '201401'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Debt After First Round (for PCR - CASH 1 or PCR - CASH 2)
-['2 Month Avg Debt After First Round','Entity':{'P3','WU'},'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'},'00','Datasource':'Allocation Calculation']= N:
-	(DB('PCR Allocations', 'TOTDEBT',!Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value')+
-	DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt After First Round', 'Entity':{'P3', 'WU'}, 'Organizational Unit PCR':{'PCR - CASH 1', 'PCR - CASH 2'}, '00', 'Datasource':'Allocation Calculation'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'InfoLease Allocation Sources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Debt After First Round
-['2 Month Avg Debt After First Round','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	(DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value')
-	+DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2;
+['2 Month Avg Debt After First Round', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Portfolio Fixed
-['2 Month Avg Portfolio Fixed','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	(DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Fixed Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	+ DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Fixed Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value'))
-	/2
-	+ DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value')
-	*  DB('PCR Allocations', '2 Month Avg Fixed %', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value');
+['2 Month Avg Portfolio Fixed', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Fixed Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Fixed Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	* DB( 'PCR Allocations', '2 Month Avg Fixed %', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' );
+
 #2 Month Avg Portfolio Floating
-['2 Month Avg Portfolio Floating','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	(DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Floating Rate', 'All Datasources', !Version,!Time Period,'Source Value')
-	+ DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Floating Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'),'Source Value'))
-	/2
-	+ DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value')
-	*  DB('PCR Allocations', '2 Month Avg Floating %', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value');
+['2 Month Avg Portfolio Floating', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Floating Rate', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'Floating Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' )
+	* DB( 'PCR Allocations', '2 Month Avg Floating %', !Entity, !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' );
+
 #2 Month Avg Fixed %
-['2 Month Avg Fixed %','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	   ((DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value
-'))
-	   /2) \
-	   ((DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value
-'))
-	   /2 +
-	   (DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Va
-lue'))
-	   /2 );
+['2 Month Avg Fixed %', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( ( DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2 )
+	\ ( ( DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value') )
+	/ 2
+	+ ( DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2 );
+
 #2 Month Avg Floating %
-['2 Month Avg Floating %','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	   ((DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Va
-lue'))
-	   /2) \
-	   ((DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Fixed Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Value
-'))
-	   /2 +
-	   (DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,!TimePeriod,'Source Value')
-	   + DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS ( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent'), 'Floating Rate', 'All Datasources', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'), 'Source Va
-lue'))
-	   /2 );
+['2 Month Avg Floating %', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( ( DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2 )
+	\ ( ( DB('PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Fixed Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2
+	+ ( DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, !TimePeriod, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'Floating Rate', 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2 );
+
 #xCOUP_RATE_FIX
-['xCOUP_RATE_FIX','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	DB('PCR Allocations', '2 Month Avg Fixed %', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period, 'Source Value')
-	*(DB('PCR Inputs', !Account PCR,'P3','00000-P3', !Version,!Time Period) + DB('PCR Inputs', 'xCOMM_FEES','P3','00000-P3', !Version,!Time Period));
+['xCOUP_RATE_FIX', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Allocations', '2 Month Avg Fixed %', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* ( DB( 'PCR Inputs', !Account PCR, 'P3', '00000-P3', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', 'P3', '00000-P3', !Version, !Time Period ) );
+
 #xCOUP_RATE_FLT
-['xCOUP_RATE_FLT','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=N:
-	DB('PCR Allocations', '2 Month Avg Floating %', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period, 'Source Value')*(
-	DB('PCR Inputs', !Account PCR,'P3','00000-P3', !Version,!Time Period)
-                + DB('PCR Inputs', 'xCOMM_FEES','P3','00000-P3', !Version,!Time Period));
+['xCOUP_RATE_FLT', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Allocations', '2 Month Avg Floating %', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* ( DB( 'PCR Inputs', !Account PCR, 'P3', '00000-P3', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', 'P3', '00000-P3', !Version, !Time Period ) );
+
 #xHQ_RATE_FIX
-['xHQ_RATE_FIX','Entity':'P3','Organizational Unit PCR':'00000-P3','00','Datasource':'Allocation Calculation','Source Value']=N:
-	DB('PCR Inputs', !Account PCR,!Entity,!Organizational Unit PCR, !Version,!Time Period);
+['xHQ_RATE_FIX', 'Entity':'P3', 'Organizational Unit PCR':'00000-P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period );
+
 #xHQ_RATE_FLT
-['xHQ_RATE_FLT','Entity':'P3','Organizational Unit PCR':'00000-P3','00','Datasource':'Allocation Calculation','Source Value']=N:
-	DB('PCR Inputs', !Account PCR,!Entity,!Organizational Unit PCR, !Version,!Time Period);
+['xHQ_RATE_FLT', 'Entity':'P3', 'Organizational Unit PCR':'00000-P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period );
+
 #2 Month Avg Int Expense
-['2 Month Avg Int Expense','Entity':{'P3','WU'},'Datasource':'Allocation Calculation','Source Value']=N:
-	(DB('PCR Allocations', 'INTEXPENSE', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version,!Time Period,'Source Value')
-	+ DB('PCR Allocations', 'INTEXPENSE', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version,ATTRS('Time Period',!Time Period,'Prior Calendar Period'),'Source Value') )
-     /2;
+['2 Month Avg Int Expense', 'Entity':{'P3', 'WU'}, 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'INTEXPENSE', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'INTEXPENSE', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #2 Month Avg Portfolio
-['2 Month Avg Portfolio','Entity':{'P3','WU'},'Datasource':'Allocation Calculation','Source Value']= N:
-	(DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version,!Time Period,'Source Value')
-	+ DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version,ATTRS('Time Period',!Time Period,'Prior Calendar Period'),'Source Value') )
-     /2;
+['2 Month Avg Portfolio', 'Entity':{'P3', 'WU'}, 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, !Program Type, 'All Datasources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), 'Source Value' ) )
+	/ 2;
+
 #Debt Rate
-['Debt Rate','Entity':'P3','PCR - CASH 1','00','Datasource':'Allocation Calculation','Source Value']= N:
-	DB('PCR Inputs', 'Debt Rate PCR Cash',!Entity,!Organizational Unit PCR, !Version,!Time Period);
-[{'Actual','Plan','Forecast','What If Scenario 1','What If Scenario 2','What If Scenario 3'},'Debt Rate',{'00000-P3','00000-WU','001_00000','002_00000','06000-P3','21600-P3','001_21600'},'00','Datasource':'Allocation Calculation','Source Value']= N: 0;
-['Debt Rate','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']= N:
-	IF ( ELISANC ( 'Organizational Unit PCR', 'PCR- Debt Rate Calculation', !Organizational Unit PCR ) > 0 & !Entity @= 'P3' ,
-		( DB('PCR Inputs', 'xCOUP_RATE_FIX',!Entity,'00000-P3', !Version,!Time Period)
-		  + DB('PCR Inputs', 'xCOMM_FEES',!Entity,'00000-P3', !Version,!Time Period))
-		*DB('PCR Inputs', 'xHQ_RATE_FIX',!Entity,'00000-P3', !Version,!Time Period)
-		+ (DB('PCR Inputs', 'xCOUP_RATE_FLT',!Entity,'00000-P3', !Version,!Time Period)
-		  + DB('PCR Inputs', 'xCOMM_FEES',!Entity, '00000-P3', !Version,!Time Period))
-		*DB('PCR Inputs', 'xHQ_RATE_FLT',!Entity,'00000-P3', !Version,!Time Period)
-		,
-		DB('PCR Allocations', 'xCOUP_RATE_FIX', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-		+DB('PCR Allocations', 'xCOUP_RATE_FLT', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value'));
+['Debt Rate', 'Entity':'P3', 'PCR - CASH 1', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Inputs', 'Debt Rate PCR Cash', !Entity, !Organizational Unit PCR, !Version, !Time Period );
+
+[{'Actual', 'Plan', 'Forecast', 'What If Scenario 1', 'What If Scenario 2', 'What If Scenario 3'}, 'Debt Rate', {'00000-P3', '00000-WU', '001_00000', '002_00000', '06000-P3', '21600-P3', '001_21600'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N: 0;
+
+['Debt Rate', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Organizational Unit PCR', 'PCR- Debt Rate Calculation', !Organizational Unit PCR ) > 0 & !Entity @= 'P3',
+	( DB( 'PCR Inputs', 'xCOUP_RATE_FIX', !Entity, '00000-P3', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', !Entity, '00000-P3', !Version, !Time Period ) )
+	* DB( 'PCR Inputs', 'xHQ_RATE_FIX', !Entity, '00000-P3', !Version, !Time Period )
+	+ ( DB( 'PCR Inputs', 'xCOUP_RATE_FLT', !Entity, '00000-P3', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', !Entity, '00000-P3', !Version, !Time Period ) )
+	* DB( 'PCR Inputs', 'xHQ_RATE_FLT', !Entity, '00000-P3', !Version, !Time Period ),
+	DB( 'PCR Allocations', 'xCOUP_RATE_FIX', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	+ DB( 'PCR Allocations', 'xCOUP_RATE_FLT', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' ) );
+
 #Calculated Interest Expense
-['Calculated Interest Expense','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']= N:
+['Calculated Interest Expense', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
 #	DB('PCR Allocations', 'Debt Rate', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	DB('PCR Allocations', 'Debt Rate', ATTRS('Organizational Unit PCR', !Organizational Unit PCR, 'Entity'), !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	*DB('PCR Allocations', '2 Month Avg Debt', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	*(-1)
-	/12;
+	DB( 'PCR Allocations', 'Debt Rate', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ), !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* DB( 'PCR Allocations', '2 Month Avg Debt', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* ( - 1 )
+	/ 12;
+
 #Calculated Interest Expense 2nd Round
-['Calculated Interest Expense 2nd Round','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']= N:
+['Calculated Interest Expense 2nd Round', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
 #	DB('PCR Allocations', 'Debt Rate', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	DB('PCR Allocations', 'Debt Rate', ATTRS('Organizational Unit PCR', !Organizational Unit PCR, 'Entity'), !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	*DB('PCR Allocations', '2 Month Avg Debt After First Round', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version,!Time Period,'Source Value')
-	*(-1)
-	/12;
+	DB( 'PCR Allocations', 'Debt Rate', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Entity' ), !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* DB( 'PCR Allocations', '2 Month Avg Debt After First Round', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	* ( - 1 )
+	/ 12;
+
 #Actual to Calculated Interest Expense Variance
-['Actual to Calculated Interest Expense Variance','Entity':'P3','00000-P3','00','Datasource':'Allocation Calculation','Source Value']= N:
+['Actual to Calculated Interest Expense Variance', 'Entity':'P3', '00000-P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
 #	DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-	DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Infolease Datasources without Allocations', !Version,!Time Period,'Source Value')
-	-DB('PCR Allocations', 'Calculated Interest Expense', 'P3 and WU', 'FPD', '00', 'Allocation Calculation', !Version,!Time Period,'Source Value');
+	DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Infolease Datasources without Allocations', !Version, !Time Period, 'Source Value' )
+	- DB( 'PCR Allocations', 'Calculated Interest Expense', 'P3 and WU', 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+
 #Actual to Calculated Interest Expense Variance 2nd Round
-['Actual to Calculated Interest Expense Variance 2nd Round','Entity':'P3','00000-P3','00','Datasource':'Allocation Calculation','Source Value']= N:
-#	DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-	DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Infolease Datasources without Allocations', !Version,!Time Period,'Source Value')
-	-DB('PCR Allocations', 'Calculated Interest Expense 2nd Round', 'P3 and WU', 'FPD', '00', 'Allocation Calculation', !Version,!Time Period,'Source Value');
+['Actual to Calculated Interest Expense Variance 2nd Round', 'Entity':'P3', '00000-P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+#	DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
+	DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', 'FPD', 'All Program Types', 'All Infolease Datasources without Allocations', !Version, !Time Period, 'Source Value' )
+	- DB( 'PCR Allocations', 'Calculated Interest Expense 2nd Round', 'P3 and WU', 'FPD', '00', 'Allocation Calculation', !Version, !Time Period, 'Source Value' );
+
 #Calculated Interest Expense Adjustment
-['Calculated Interest Expense Adjustment','Entity':'P3','00','Datasource':'Allocation Calculation','Source Value']= N:
+['Calculated Interest Expense Adjustment', 'Entity':'P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
 #	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-IF(!Organizational Unit PCR @= '00000-P3',
-	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'Source Systems', !Version,!Time Period,'Source Value'))
-	* -1
-,
-	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Infolease Datasources without Allocations', !Version,!Time Period,'Source Value')
-	-DB('PCR Allocations', 'First Interest Expense Allocation', 'P3 and WU', !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value'))
-	* -1
-)
-;
+IF( !Organizational Unit PCR @= '00000-P3',
+	( DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'Source Systems', !Version, !Time Period, 'Source Value' ) )
+	* - 1,
+	( DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Infolease Datasources without Allocations', !Version, !Time Period, 'Source Value' )
+	- DB( 'PCR Allocations', 'First Interest Expense Allocation', 'P3 and WU', !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' ) )
+	* - 1 );
+
 #Calculated Interest Expense Adjustment 2nd Round
-['Calculated Interest Expense Adjustment 2nd Round','Entity':'P3','00','Datasource':'Allocation Calculation','Source Value']= N:
+['Calculated Interest Expense Adjustment 2nd Round', 'Entity':'P3', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
 #	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Datasources', !Version,!Time Period,'Source Value')
-IF(!Organizational Unit PCR @= '00000-P3',
-	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'Source Systems', !Version,!Time Period,'Source Value'))
-	* -1
-,
-	(DB('PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Infolease Datasources without Allocations', !Version,!Time Period,'Source Value')
-	-DB('PCR Allocations', 'Second Interest Expense Allocation', 'P3 and WU', !Organizational Unit PCR, '00', 'All Datasources', !Version,!Time Period,'Source Value'))
-	* -1
-)
-;
+IF( !Organizational Unit PCR @= '00000-P3',
+	( DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'Source Systems', !Version, !Time Period, 'Source Value' ) )
+	* - 1,
+	( DB( 'PCR Allocations', 'INTEXPENSE', 'P3 and WU', !Organizational Unit PCR, 'All Program Types', 'All Infolease Datasources without Allocations', !Version, !Time Period, 'Source Value' )
+	- DB( 'PCR Allocations', 'Second Interest Expense Allocation', 'P3 and WU', !Organizational Unit PCR, '00', 'All Datasources', !Version, !Time Period, 'Source Value' ) )
+	* - 1 );
 #endregion
 
 #region Calculated Legal Tax rate
 #['Calculated Legal Tax Rate','GLS LE - CIF', 'All Program Types', 'GLS',{'201401','201402','201403','201404','201405','201406','201407','201408','201409','201410','201411','201412'},'Source Value'] = C: .0038;
-['Calculated Legal Tax Rate','GLS LE - CIF', 'All Program Types', 'GLS','Source Value'] = C: .35;
-['Calculated Legal Tax Rate','FPD','All Program Types', 'GLS','Source Value']= C:
-	-1 *(DB('PCR Allocations', 'TOTTAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | 'YTD', !Allocations Measure)
-	\ DB('PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period  |'YTD', !Allocations Measure));
-['Calculated Legal Tax Rate']= C: 0;
-#endregion
-#region Calculated Tax Expense
-['Calculated Tax Expense on Derivatives','00','Datasource':'Allocation Calculation','Source Value']= N:
-	IF ( ELISANC ( 'Organizational Unit PCR', 'GLS LE - CIF', !Organizational Unit PCR ) > 0 ,
-		if (subst(!Time Period,5,2) @= '01',
-			(DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure),
-			((DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure))
-			- DB('PCR Allocations', 'Calculated Tax Expense on Derivatives', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period') | 'YTD', !Allocations Measure)),
-		if (subst(!Time Period,5,2) @= '01',
-			(DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure),
-			((DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | 'YTD', !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | 'YTD', !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure))
-			- DB('PCR Allocations', 'Calculated Tax Expense on Derivatives', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, attrs('Time Period',!Time Period,'Prior Calendar Period') | 'YTD', !Allocations Measure)));
+['Calculated Legal Tax Rate', 'GLS LE - CIF', 'All Program Types', 'GLS', 'Source Value'] = C: .35;
+
+['Calculated Legal Tax Rate', 'FPD', 'All Program Types', 'GLS', 'Source Value'] = C:
+	-1
+	* ( DB( 'PCR Allocations', 'TOTTAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure )
+	\ DB( 'PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure ) );
+
+['Calculated Legal Tax Rate'] = C: 0;
 #endregion
 
 #region Calculated Tax Expense
-['Calculated Tax Expense on Derivatives YTD','00','Datasource':'Allocation Calculation','Source Value']= N:
-	IF ( ELISANC ( 'Organizational Unit PCR', 'GLS LE - CIF', !Organizational Unit PCR ) > 0 ,
-		if (subst(!Time Period,5,2) @= '01',
-			(DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure),
-			((DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure))
-			),
-		if (subst(!Time Period,5,2) @= '01',
-			(DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure),
-			((DB('PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | 'YTD', !Allocations Measure)
-			+ DB('PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | 'YTD', !Allocations Measure))
-			* DB('PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure))
-			));
+['Calculated Tax Expense on Derivatives', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Organizational Unit PCR', 'GLS LE - CIF', !Organizational Unit PCR ) > 0,
+	IF( SUBST( !Time Period, 5, 2 ) @= '01',
+		( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure )
+		+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure ))
+		* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ),
+		( ( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure )
+		+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure ) )
+		* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ) )
+		- DB( 'PCR Allocations', 'Calculated Tax Expense on Derivatives', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ) | ' YTD', !Allocations Measure )
+		),
+		IF( SUBST( !Time Period, 5, 2 ) @= '01',
+			( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure )
+			+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure ) )
+			* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ),
+			( ( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure )
+			+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure ) )
+			* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ) )
+			- DB( 'PCR Allocations', 'Calculated Tax Expense on Derivatives', !Entity, !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ) | ' YTD', !Allocations Measure )
+			)
+		);
+#endregion
+
+#region Calculated Tax Expense
+['Calculated Tax Expense on Derivatives YTD', '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Organizational Unit PCR', 'GLS LE - CIF', !Organizational Unit PCR ) > 0,
+	IF( SUBST( !Time Period, 5, 2 ) @= '01',
+		( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure )
+		+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure ) )
+		* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ),
+		( ( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure )
+		+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure ) )
+		* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'GLS LE - CIF', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ) )
+		),
+		IF( SUBST( !Time Period, 5, 2 ) @= '01',
+			( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure )
+			+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period, !Allocations Measure ) )
+			* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ),
+			( ( DB( 'PCR Allocations', 'GLFROMINTRT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure )
+			+ DB( 'PCR Allocations', 'FWDPOINTUNRL', !Entity, !Organizational Unit PCR, 'All Program Types', 'All GLS Datasources', !Version, !Time Period | ' YTD', !Allocations Measure ) )
+			* DB( 'PCR Allocations', 'Calculated Legal Tax Rate', !Entity, 'FPD', 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure ) )
+			)
+		);
 #endregion
 
 #region federal Income Tax P3
 #FedIncTaxRate
-['Federal Tax Rate','Entity':'P3','00','00000-P3','Datasource':'Input','Source Value']= N:
-	DB('PCR Inputs', 'Federal Tax Rate',!Entity,!Organizational Unit PCR, !Version,subst(!Time Period,1,4) | '12');
+['Federal Tax Rate', 'Entity':'P3', '00', '00000-P3', 'Datasource':'Input', 'Source Value'] = N:
+	DB( 'PCR Inputs', 'Federal Tax Rate', !Entity, !Organizational Unit PCR, !Version, SUBST( !Time Period, 1, 4 ) | '12' );
+
 #xPermTax Calculated for 'PCR - Tax'
-['Calculated Federal Tax','Entity':{'P3','WU'},'PCR - Tax']= stet;
+['Calculated Federal Tax', 'Entity':{'P3', 'WU'}, 'PCR - Tax'] = STET;
+
 #xPermTax Calculated for others
-['Calculated Federal Tax','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']= N:
-	- DB('PCR Allocations', 'Federal Tax Rate', 'P3', '00000-P3', '00', 'Input', !Version,!Time Period,'Source Value')
-	* (  DB('PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with Allocation Calculation', !Version,!Time Period,'Source Value')
-	   - DB('PCR Allocations', 'MUNICIPSALES', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with Allocation Calculation', !Version,!Time Period,'Source Value'));
+['Calculated Federal Tax', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] = N:
+	- DB( 'PCR Allocations', 'Federal Tax Rate', 'P3', '00000-P3', '00', 'Input', !Version, !Time Period, 'Source Value' )
+	* ( DB( 'PCR Allocations', 'PLBEFORETAX', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with Allocation Calculation', !Version, !Time Period, 'Source Value' )
+	- DB( 'PCR Allocations', 'MUNICIPSALES', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with Allocation Calculation', !Version, !Time Period, 'Source Value' ) );
 #endregion
 
 #region AFR
 #region AFR Pt I
-['Weighted AVG Rate for AFR','Entity':{'P3','WU'}] = C:0;
+['Weighted AVG Rate for AFR', 'Entity':{'P3', 'WU'}] = C: 0;
+
 ['Weighted AVG Rate for AFR'] = C:
-	DB( 'PCR Inputs', 'Weighted AVG Rate for AFR', !Entity, !Organizational Unit PCR, !Version, !Time Period);
-['2 Month AVG Payables Balance','Entity':{'P3','WU'},'00','Allocation Calculation','Source Value'] = N:0;
-['2 Month AVG Payables Balance','00','Allocation Calculation','Source Value'] = N:
-		( DB('PCR Allocations','G00010P300', !Entity, !Organizational Unit PCR,'All Program Types','GLS', !Version,!Time Period,!Allocations Measure)
-		-  DB ('PCR Inputs', 'Adjustment to Payables Balance G00010P300',!Entity,!Organizational Unit PCR, !Version, !Time Period )
-		+ DB ('PCR Allocations','G00010P300', !Entity, !Organizational Unit PCR,'All Program Types','GLS', !Version,ATTRS ('Time Period',!Time Period,'Prior Calendar Period'),!Allocations Measure)
-		-  DB ('PCR Inputs', 'Adjustment to Payables Balance G00010P300',!Entity,!Organizational Unit PCR, !Version, ATTRS ('Time Period',!Time Period,'Prior Calendar Period')))
-		/ 2;
-['Interest Expense AFR (Pt I) for Allocation','Entity':{'P3','WU'},'00','Allocation Calculation','Source Value'] = N: 0;
-['Interest Expense AFR (Pt I) for Allocation','00','Allocation Calculation','Source Value'] = N:
-	IF ( ELISANC ( 'Entity', 'CIF', !Entity ) > 0 ,
-		( DB('PCR Inputs', 'xLoan Balance for AFR Floating',!Entity,!Organizational Unit PCR, !Version, !Time Period )
-		* ( DB('PCR Inputs', 'xCOUP_RATE_FLT','GV','00000-GV', !Version, !Time Period )
-		     + DB('PCR Inputs', 'xCOMM_FEES','GV','00000-GV', !Version, !Time Period ) )
-		+ DB('PCR Inputs', 'xLoan Balance for AFR Fixed',!Entity,!Organizational Unit PCR, !Version, !Time Period )
-		* ( DB('PCR Inputs', 'xCOUP_RATE_FIX','GV','00000-GV', !Version, !Time Period )
-		     + DB('PCR Inputs', 'xCOMM_FEES','GV','00000-GV', !Version, !Time Period ) ) )
-		  / 12 ,
-		(['2 Month AVG Payables Balance Stored','All Program Types','All Datasources']
-		* ['Weighted AVG Rate for AFR','00','Allocation Calculation']
-		* (-1) / 12 )
-		- ['S1751103P3','All Program Types','All Datasources']);
+	DB( 'PCR Inputs', 'Weighted AVG Rate for AFR', !Entity, !Organizational Unit PCR, !Version, !Time Period );
+
+['2 Month AVG Payables Balance', 'Entity':{'P3', 'WU'}, '00', 'Allocation Calculation', 'Source Value'] = N: 0;
+
+['2 Month AVG Payables Balance', '00', 'Allocation Calculation', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'G00010P300', !Entity, !Organizational Unit PCR, 'All Program Types', 'GLS', !Version, !Time Period, !Allocations Measure )
+	- DB( 'PCR Inputs', 'Adjustment to Payables Balance G00010P300', !Entity, !Organizational Unit PCR, !Version, !Time Period )
+	+ DB( 'PCR Allocations', 'G00010P300', !Entity, !Organizational Unit PCR, 'All Program Types', 'GLS', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), !Allocations Measure )
+	- DB( 'PCR Inputs', 'Adjustment to Payables Balance G00010P300', !Entity, !Organizational Unit PCR, !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ) ) )
+	/ 2;
+
+['Interest Expense AFR (Pt I) for Allocation', 'Entity':{'P3', 'WU'}, '00', 'Allocation Calculation', 'Source Value'] = N: 0;
+
+['Interest Expense AFR (Pt I) for Allocation', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Entity', 'CIF', !Entity ) > 0,
+	( DB( 'PCR Inputs', 'xLoan Balance for AFR Floating', !Entity, !Organizational Unit PCR, !Version, !Time Period )
+	* ( DB( 'PCR Inputs', 'xCOUP_RATE_FLT', 'GV', '00000-GV', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', 'GV', '00000-GV', !Version, !Time Period ) )
+	+ DB( 'PCR Inputs', 'xLoan Balance for AFR Fixed', !Entity, !Organizational Unit PCR, !Version, !Time Period )
+	* ( DB( 'PCR Inputs', 'xCOUP_RATE_FIX', 'GV', '00000-GV', !Version, !Time Period )
+	+ DB( 'PCR Inputs', 'xCOMM_FEES', 'GV', '00000-GV', !Version, !Time Period ) ) )
+	/ 12,
+	( ['2 Month AVG Payables Balance Stored', 'All Program Types', 'All Datasources']
+	* ['Weighted AVG Rate for AFR', '00', 'Allocation Calculation']
+	* ( - 1 )
+	/ 12 )
+	- ['S1751103P3', 'All Program Types', 'All Datasources'] );
 #endregion
+
 #region AFR Pt II.
-['Interest Expense Calculated (% of Total)','Entity':{'P3','WU'},'00','Allocation Calculation','Source Value'] = N: 0;
-['Interest Expense Calculated (% of Total)','00','Allocation Calculation','Source Value'] = N:
-	IF ( ELISANC ( 'Entity', 'CIF', !Entity ) > 0 ,
-		(['Interest Expense Allocation AFR (Pt I)','All Program Types','All Datasources'])
-		\ ROUND (['Interest Expense Allocation AFR (Pt I)','Entity':'CIF','CFSC','All Program Types','All Datasources']),
-		(['Interest Expense Allocation AFR (Pt I)','All Program Types','All Datasources'])
-		\ ROUND (['Interest Expense Allocation AFR (Pt I)','P0G without CIF','CFSC','All Program Types','All Datasources']));
-['Interest Expense Delta to Total','Entity':'P3','Organizational Unit PCR':'Not Applicable','00','Allocation Calculation','Source Value'] = N:
-	['INTEXPENSE','P3 and WU','PCR - INTERCO','All Program Types','All Datasources']
-	-  ['Interest Expense Allocation AFR (Pt I)','Entity':'P0G without CIF','CFSC','All Program Types','All Datasources','Source Value']
-	-  ['Interest Expense AFR Assigned','Entity':'P0G without CIF','CFSC','All Program Types','All Datasources','Source Value'];
-['Interest Expense Delta to Total','Entity':'GV','Organizational Unit PCR':'Not Applicable','00','Allocation Calculation','Source Value'] = N:
-	['TOTINTEXP','GV','PCR - CIF INTERCO','All Program Types','All Datasources']
-	-  ['Interest Expense Allocation AFR (Pt I)','Entity':'CIF','CFSC','All Program Types','All Datasources']
-	-  ['Interest Expense AFR Assigned','Entity':'CIF','CFSC','All Program Types','All Datasources'];
-['Interest Expense AFR (Pt II) for Allocation','Entity':{'P3','WU'},'00','Allocation Calculation','Source Value'] = N:0;
-['Interest Expense AFR (Pt II) for Allocation','00','Allocation Calculation','Source Value'] = N:
-	IF ( ELISANC ( 'Entity', 'CIF', !Entity ) > 0 ,
-		['Interest Expense Calculated (% of Total)','00','Allocation Calculation']
-		* ['Interest Expense Delta to Total Stored','Entity':'GV','Organizational Unit PCR':'Not Applicable','All Program Types','All Datasources']
-		- ['S17510GV00','All Program Types','All Datasources']
-		- ['S17510GV05','All Program Types','All Datasources'],
-		['Interest Expense Calculated (% of Total)','00','Allocation Calculation']
-		* ['Interest Expense Delta to Total Stored','Entity':'P3','Organizational Unit PCR':'Not Applicable','All Program Types','All Datasources']
-		- ['S17510P300','All Program Types','All Datasources']);
+['Interest Expense Calculated (% of Total)', 'Entity':{'P3', 'WU'}, '00', 'Allocation Calculation', 'Source Value'] = N: 0;
+
+['Interest Expense Calculated (% of Total)', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Entity', 'CIF', !Entity ) > 0,
+	( ['Interest Expense Allocation AFR (Pt I)', 'All Program Types', 'All Datasources'] )
+	\ ROUND( ['Interest Expense Allocation AFR (Pt I)', 'Entity':'CIF', 'CFSC', 'All Program Types', 'All Datasources'] ),
+	( ['Interest Expense Allocation AFR (Pt I)', 'All Program Types', 'All Datasources'] )
+	\ ROUND( ['Interest Expense Allocation AFR (Pt I)', 'P0G without CIF', 'CFSC', 'All Program Types', 'All Datasources'] ) );
+
+['Interest Expense Delta to Total', 'Entity':'P3', 'Organizational Unit PCR':'Not Applicable', '00', 'Allocation Calculation', 'Source Value'] = N:
+	['INTEXPENSE', 'P3 and WU', 'PCR - INTERCO', 'All Program Types', 'All Datasources']
+	- ['Interest Expense Allocation AFR (Pt I)', 'Entity':'P0G without CIF', 'CFSC', 'All Program Types', 'All Datasources', 'Source Value']
+	- ['Interest Expense AFR Assigned', 'Entity':'P0G without CIF', 'CFSC', 'All Program Types', 'All Datasources', 'Source Value'];
+
+['Interest Expense Delta to Total', 'Entity':'GV', 'Organizational Unit PCR':'Not Applicable', '00', 'Allocation Calculation', 'Source Value'] = N:
+	['TOTINTEXP', 'GV', 'PCR - CIF INTERCO', 'All Program Types', 'All Datasources']
+	- ['Interest Expense Allocation AFR (Pt I)', 'Entity':'CIF', 'CFSC', 'All Program Types', 'All Datasources']
+	- ['Interest Expense AFR Assigned', 'Entity':'CIF', 'CFSC', 'All Program Types', 'All Datasources'];
+
+['Interest Expense AFR (Pt II) for Allocation', 'Entity':{'P3', 'WU'}, '00', 'Allocation Calculation', 'Source Value'] = N: 0;
+
+['Interest Expense AFR (Pt II) for Allocation', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Entity', 'CIF', !Entity ) > 0,
+	['Interest Expense Calculated (% of Total)', '00', 'Allocation Calculation']
+	* ['Interest Expense Delta to Total Stored', 'Entity':'GV', 'Organizational Unit PCR':'Not Applicable', 'All Program Types', 'All Datasources']
+	- ['S17510GV00', 'All Program Types', 'All Datasources']
+	- ['S17510GV05', 'All Program Types', 'All Datasources'],
+	['Interest Expense Calculated (% of Total)', '00', 'Allocation Calculation']
+	* ['Interest Expense Delta to Total Stored', 'Entity':'P3', 'Organizational Unit PCR':'Not Applicable', 'All Program Types', 'All Datasources']
+	- ['S17510P300', 'All Program Types', 'All Datasources'] );
 #endregion
+
 #region Tax Impact
-['Interest Expense AFR - Tax Impact Calculation','00','Allocation Calculation','Source Value'] = N:
-	IF ( ELISANC ( 'Entity', 'CIF', !Entity ) > 0 ,
-		['Interest Expense Allocation AFR','All Program Types','All Datasources'] * (-1)
-		* DB ( 'PCR Inputs', 'Federal Tax Rate','P3','00000-P3',!Version,SUBST (!Time Period,1,4) | '12'),
-		['Interest Expense Allocation AFR','All Program Types','All Datasources'] * (-1)
-		* DB ( 'PCR Inputs', 'Federal Tax Rate','P3','00000-P3',!Version,SUBST (!Time Period,1,4) | '12'));
+['Interest Expense AFR - Tax Impact Calculation', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ELISANC( 'Entity', 'CIF', !Entity ) > 0,
+	['Interest Expense Allocation AFR', 'All Program Types', 'All Datasources']
+	* ( - 1 )
+	* DB( 'PCR Inputs', 'Federal Tax Rate', 'P3', '00000-P3', !Version, SUBST( !Time Period, 1, 4 ) | '12' ),
+	['Interest Expense Allocation AFR', 'All Program Types', 'All Datasources']
+	* ( - 1 )
+	* DB( 'PCR Inputs', 'Federal Tax Rate', 'P3', '00000-P3', !Version, SUBST( !Time Period, 1, 4 ) | '12' ) );
 #endregion
 #endregion
 
 #region Debt Normalization
-['Avg YTD Debt','00','Stat Account & Metrics Calculations','Source Value'] = N:
-	(DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version,!Time Period ,!Allocations Measure)
-	+ DB('PCR Allocations', 'TOTDEBT',  !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'),!Allocations Measure) )
- 	/2;
+['Avg YTD Debt', '00', 'Stat Account & Metrics Calculations', 'Source Value'] = N:
+	( DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure )
+	+ DB( 'PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ), !Allocations Measure ) )
+	/ 2;
+
 ['Avg YTD Debt without Normalization','00','Stat Account & Metrics Calculations','Source Value'] = N:
 	(DB('PCR Allocations', 'TOTDEBT', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with PCA without Normalization', !Version,!Time Period ,!Allocations Measure)
-	+ DB('PCR Allocations', 'TOTDEBT',  !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with PCA without Normalization', !Version,attrs('Time Period',!Time Period,'Prior Calendar Period'),!Allocations Measure) )
+	+ DB('PCR Allocations', 'TOTDEBT',  !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources with PCA without Normalization', !Version,ATTRS('Time Period',!Time Period,'Prior Calendar Period'),!Allocations Measure) )
  	/2;
+
 #DM: Changed to try to eliminate Prior Months Normalized numbers
-['Interest Expense as a % of Avg YTD Debt','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-	IF ( ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'Normalization Level') @= 'Y' ,
-		DB('PCR Allocations', 'CFSC INTEREST EXPENSE - MARGIN (Includes Ptns on Forward)','LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'), 'All Program Types', 'All Datasources including PCA', !Version,!Time Period ,!Allocations Measure)
-		* 12
-		#\ DB('PCR Allocations', 'AVG YTD Debt','LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'), '00', 'Stat Account & Metrics Calculations', !Version,!Time Period ,!Allocations Measure),
-		\ DB('PCR Allocations', 'Avg YTD Debt without Normalization','LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'), '00', 'Stat Account & Metrics Calculations', !Version,!Time Period ,!Allocations Measure),
-		0);
+['Interest Expense as a % of Avg YTD Debt', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Normalization Level' ) @= 'Y',
+	DB( 'PCR Allocations', 'CFSC INTEREST EXPENSE - MARGIN (Includes Ptns on Forward)', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure )
+	* 12
+	#\ DB('PCR Allocations', 'AVG YTD Debt','LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'), '00', 'Stat Account & Metrics Calculations', !Version,!Time Period ,!Allocations Measure),
+	\ DB( 'PCR Allocations', 'Avg YTD Debt without Normalization', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), '00', 'Stat Account & Metrics Calculations', !Version, !Time Period, !Allocations Measure ),
+	0 );
+
 ['Interest Expense as a % of Avg YTD Debt'] = C: 0;
-[{'Normalized Debt (Calc)','Normalized Equity (Calc)'},'Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-	IF ( ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'Normalization Level') @= 'Y' ,
-		(DB('PCR Allocations', 'TOTDEBT','LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'), 'All Program Types', 'All Datasources including PCA', !Version,!Time Period ,!Allocations Measure )
-		+ DB('PCR Allocations', 'TOTEQUITY','LE.2020-12.P0G',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types', 'All Datasources including PCA', !Version,!Time Period,!Allocations Measure ))
-		/ 9
-		* IF ( !Account PCR @= 'Normalized Debt (Calc)', 8, 1 ),
-		0);
-['Debt Normalization Calculation','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-	IF ( ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'Normalization Level') @= 'Y' ,
-		DB('PCR Allocations', 'Normalized Debt (Calc)',!Entity, !Organizational Unit PCR,'All Program Types', 'All Datasources including PCA', !Version,!Time Period ,!Allocations Measure)
-		- DB('PCR Allocations', 'TOTDEBT','LE.2020-12.P0G',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types', 'All Datasources including PCA', !Version,!Time Period,!Allocations Measure ),
-		0);
-['Equity Normalization Calculation','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-	IF ( ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'Normalization Level') @= 'Y' ,
-		DB('PCR Allocations', 'Normalized Equity (Calc)',!Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version,!Time Period ,!Allocations Measure)
-		- DB('PCR Allocations', 'TOTEQUITY','LE.2020-12.P0G',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types', 'All Datasources including PCA', !Version,!Time Period,!Allocations Measure) ,
-		0);
-['Interest Expense Debt Normalization - Calculation','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
+
+[{'Normalized Debt (Calc)', 'Normalized Equity (Calc)'}, 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Normalization Level' ) @= 'Y',
+	( DB( 'PCR Allocations', 'TOTDEBT', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure )
+	+ DB( 'PCR Allocations', 'TOTEQUITY', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure ) )
+	/ 9
+	* IF( !Account PCR @= 'Normalized Debt (Calc)',
+		8,
+		1 ),
+	0 );
+
+['Debt Normalization Calculation', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Normalization Level' ) @= 'Y',
+	DB( 'PCR Allocations', 'Normalized Debt (Calc)', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure )
+	- DB( 'PCR Allocations', 'TOTDEBT', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure ),
+	0 );
+
+['Equity Normalization Calculation', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, 'Normalization Level' ) @= 'Y',
+	DB( 'PCR Allocations', 'Normalized Equity (Calc)', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure )
+	- DB( 'PCR Allocations', 'TOTEQUITY', 'LE.2020-12.P0G', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources including PCA', !Version, !Time Period, !Allocations Measure ),
+	0 );
+
+['Interest Expense Debt Normalization - Calculation', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
 	['Debt Normalization Calculation']
 	* ['Interest Expense as a % of Avg YTD Debt']
 	/ 12;
-['Interest Expense Debt Normalization - Calculation YTD','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-	DB('PCR Allocations','Debt Normalization Calculation',!Entity,!Organizational Unit PCR,!Program Type,!Datasource,!Version,!Time Period | ' YTD',!Allocations Measure)
+
+['Interest Expense Debt Normalization - Calculation YTD', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Allocations', 'Debt Normalization Calculation', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure )
 	* ['Interest Expense as a % of Avg YTD Debt']
 	/ 12;
+
 #['Interest Expense Debt Normalization - Tax Impact Calculation','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
 #	['Interest Expense Debt Normalization - Calculation'] * (-1)
 #	* DB('PCR Allocations', 'Calculated Tax %', 'LE.2020-12.P0G', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','All Datasources with PCA without Normalization', !Version, !Time Period, !Allocations Measure);
-['Interest Expense Debt Normalization - Tax Impact Calculation','Entity':'Normalization','00','Allocation Calculation','Source Value'] = N:
-IF(SUBST(!Time Period, 5, 2) @= '01',
-DB('PCR Allocations','TOTINTEXP','LE.2020-12.P0MG',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','Debt & Equity Normalization Allocation Sources',!Version,!Time Period,!Allocations Measure) * (-1)
-* DB('PCR Allocations', 'Calculated Tax %', 'LE.2020-12.P0MG', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','All Datasources with PCA without Normalization', !Version, !Time Period, !Allocations Measure)
-,
-(DB('PCR Allocations','PLBEFORETAX','LE.2020-12.P0MG',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','Debt & Equity Normalization Allocation Sources',!Version,!Time Period | ' YTD',!Allocations Measure)
-* (DB('PCR Allocations', 'Calculated Tax %', 'LE.2020-12.P0MG', ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','All Datasources with PCA without Normalization', !Version, !Time Period, !Allocations Measure) * -1))
-- DB('PCR Allocations','TOTTAX','LE.2020-12.P0MG',ATTRS ('Organizational Unit PCR',!Organizational Unit PCR,'1st Org Unit Parent'),'All Program Types','Debt & Equity Normalization Allocation Sources',!Version,ATTRS('Time Period',!Time Period,'Prior Calendar Period') | ' YTD',!Allocations Measure)
-);
-
+['Interest Expense Debt Normalization - Tax Impact Calculation', 'Entity':'Normalization', '00', 'Allocation Calculation', 'Source Value'] = N:
+IF( SUBST( !Time Period, 5, 2 ) @= '01',
+	DB( 'PCR Allocations', 'TOTINTEXP', 'LE.2020-12.P0MG', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'Debt & Equity Normalization Allocation Sources', !Version, !Time Period, !Allocations Measure )
+	* ( - 1 )
+	* DB( 'PCR Allocations', 'Calculated Tax %', 'LE.2020-12.P0MG', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources with PCA without Normalization', !Version, !Time Period, !Allocations Measure ),
+	( DB( 'PCR Allocations', 'PLBEFORETAX', 'LE.2020-12.P0MG', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'Debt & Equity Normalization Allocation Sources', !Version, !Time Period | ' YTD', !Allocations Measure )
+	* ( DB( 'PCR Allocations', 'Calculated Tax %', 'LE.2020-12.P0MG', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'All Datasources with PCA without Normalization', !Version, !Time Period, !Allocations Measure )
+	* - 1 ) )
+	- DB( 'PCR Allocations', 'TOTTAX', 'LE.2020-12.P0MG', ATTRS( 'Organizational Unit PCR', !Organizational Unit PCR, '1st Org Unit Parent' ), 'All Program Types', 'Debt & Equity Normalization Allocation Sources', !Version, ATTRS( 'Time Period', !Time Period, 'Prior Calendar Period' ) | ' YTD', !Allocations Measure ) );
 #endregion
 
 #region Allocate Cash based on % of Portfolio Opening Balance: calculate Portfolio Opening Balance
-['Portfolio Opening Balance','00','Allocation Calculation','Source Value'] = N:
-	DB('PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version,STR ( NUMBR ( SUBST ( !Time Period,1,4))-1,4,0) | '12',!Allocations Measure);
+['Portfolio Opening Balance', '00', 'Allocation Calculation', 'Source Value'] = N:
+	DB( 'PCR Allocations', 'Total Portfolio', !Entity, !Organizational Unit PCR, 'All Program Types', 'All Datasources including PCA', !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', !Allocations Measure );
 #endregion
 
-
-
 #region Retained Earnings YTD balance for each period
+['RETEARNING120', 'Source Value'] = N:
+	DB( 'PCR Allocations', 'NETINC', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure );
 
-['RETEARNING120','Source Value'] = N:
-		DB('PCR Allocations', 'NETINC', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD',!Allocations Measure);
 ['RETEARNING120'] = C:
-	IF (ELLEV('Time Period',!Time Period)=0,
-		DB('PCR Allocations', 'NETINC', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD',!Allocations Measure),
-		Continue);
+IF( ELLEV( 'Time Period', !Time Period ) = 0,
+	DB( 'PCR Allocations', 'NETINC', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, !Time Period | ' YTD', !Allocations Measure ),
+	CONTINUE );
 #endregion
 
 #region for non-gls ans PCA, roll over December RETEARNING into RETEARNINGOB (RETEARNING100) for Jan
-
 ['RETEARNING100','Source Value'] = N:
-	IF ( !Datasource @<> 'GLS' & NUMBR ( !Time Period ) > 201412 & ATTRS('Datasource', !Datasource, 'YE RE Rollover') @= 'Y',
-		DB('PCR Allocations', 'RETEARNING', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version,STR ( NUMBR ( SUBST ( !Time Period,1,4))-1,4,0) | '12', 'Source Value'),
-		continue);
+IF( !Datasource @<> 'GLS' & NUMBR( !Time Period ) > 201412 & ATTRS( 'Datasource', !Datasource, 'YE RE Rollover' ) @= 'Y',
+	DB( 'PCR Allocations', 'RETEARNING', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, STR( NUMBR( SUBST( !Time Period, 1, 4 ) ) - 1, 4, 0 ) | '12', 'Source Value' ),
+	CONTINUE );
 #endregion
 
 #region xStock, xDividend, xOBProfitEmployed
 [{'xOBAssets'}]= N: STET;
 
-##QUEBIT RULE CHANGE - Changed on 5/5/2017
+##QUEBIT RULE CHANGE - Changed on 2017/05/05
+#CHANGE MADE TO OPEN ALL TIME PERIODS
 ['Account PCR':{'xOBPortfolio'}, '00', 'Datasource':'Input', 'Source Value'] = N:
 	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period );
 
-##QUEBIT RULE CHANGE - Changed on 5/5/2017
-['Account PCR':{'xStock', 'xDividend'}, 'Entity':{'P3', 'WU', 'LM'}, '00', 'Datasource':'Input', 'Source Value']= N:
-	DB('PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period );
+##ORIGINAL CODE FOR XOBPORTFOLIO
+#['Account PCR':{'xOBPortfolio'}, '00', 'Datasource':'Input', 'Source Value'] = N:
+#	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, SUBST( !Time Period, 1, 4 ) | '01' );
+
+##QUEBIT RULE CHANGE - Changed on 2017/05/05
+#CHANGE MADE TO OPEN ALL TIME PERIODS
+['Account PCR':{'xStock', 'xDividend'}, 'Entity':{'P3', 'WU', 'LM'}, '00', 'Datasource':'Input', 'Source Value'] = N:
+	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, !Time Period );
+
+##ORIGINAL CODE FOR XSTOCK AND XDIVIDEND
+#['Account PCR':{'xStock', 'xDividend'}, 'Entity':{'P3', 'WU', 'LM'}, '00', 'Datasource':'Input', 'Source Value'] = N:
+#	DB( 'PCR Inputs', !Account PCR, !Entity, !Organizational Unit PCR, !Version, SUBST( !Time Period, 1, 4 ) | '01' );
 #endregion
 
 FEEDERS;
-
 #region YTD Retained Earnings
-['RETEARNINGTOB','Source Value'] => ['RETEARNING120'];
-['NETINC','Source Value'] => DB('PCR Allocations','RETEARNING120',!Entity,!Organizational Unit PCR,!Program Type,!Datasource,!Version,SUBST ( !Time Period,1,4),!Allocations Measure);
-['RETEARNING','Dec Prior Year','Source Value'] =>
-	DB ( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR,!Program Type,!Datasource,!Version,'2017','Source Value');
+['RETEARNINGTOB', 'Source Value'] =>
+	['RETEARNING120'];
+
+['NETINC', 'Source Value'] =>
+	DB( 'PCR Allocations', 'RETEARNING120', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, SUBST( !Time Period, 1, 4 ), !Allocations Measure );
+
+['RETEARNING', 'Dec Prior Year', 'Source Value'] =>
+	DB( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, '2017', 'Source Value' );
+
 #Team added 1/23/17
-['RETEARNING','201512','Source Value'] =>
-	DB ( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR,!Program Type,!Datasource,!Version,'2016','Source Value');
+['RETEARNING', '201512', 'Source Value'] =>
+	DB( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR, !Program Type, !Datasource, !Version, '2016', 'Source Value' );
+
 #Gavin added 8/10/16
-['RETEARNING','201412','Source Value'] =>
-	DB ( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR,!Program Type,!Datasource,!Version,'2015','Source Value');
+['RETEARNING', '201412', 'Source Value'] =>
+	DB( 'PCR Allocations', 'RETEARNING100', !Entity, !Organizational Unit PCR, !Program Type,!Datasource,!Version,'2015','Source Value');
 
 #endregion
 
 #region Federal Income tax Calc
 #PLBEFORETAX feeding Federal Income Tax less xPermTax Calculation, xPermTax Calculated
-['Entity':{'P3','WU'},'MUNICIPSALES','Source Value']=>
-	['Calculated Federal Tax','00','Datasource':'Allocation Calculation'];
-['PLBEFORETAX','Source Value']=>
-	['Calculated Federal Tax','00'],
-	['Calculated Federal Tax','00','Allocation Calculation'];
+['Entity':{'P3', 'WU'}, 'MUNICIPSALES', 'Source Value'] =>
+	['Calculated Federal Tax', '00', 'Datasource':'Allocation Calculation'];
+
+['PLBEFORETAX', 'Source Value'] =>
+	['Calculated Federal Tax', '00'],
+	['Calculated Federal Tax', '00', 'Allocation Calculation'];
 #endregion
 
 #region Cash allocations
@@ -588,56 +653,66 @@ FEEDERS;
 	['2 Month Avg Debt After first round','Datasource':'Allocation Calculation','Actual'],
 	['Calculated Interest Expense','Datasource':'Allocation Calculation','00','Actual'],
 	['Calculated Interest Expense 2nd Round','Datasource':'Allocation Calculation','00','Actual'];
-['TOTDEBT','Entity':'LM','Source Value']=>
-	['Debt-Equity Ratio','Datasource':'Allocation Calculation','00000-LM','00'],
-	['2 Month Avg Debt','Datasource':'Allocation Calculation','Actual'];
+
+['TOTDEBT', 'Entity':'LM', 'Source Value'] =>
+	['Debt-Equity Ratio', 'Datasource':'Allocation Calculation', '00000-LM', '00'],
+	['2 Month Avg Debt', 'Datasource':'Allocation Calculation', 'Actual'];
 #endregion
+
 #region Total Assets feeding Calc Debt, Calc Equity
-['TOTASSET','Entity':{'P3','WU','LM'},'Source Value']=>
-	['Calculated Debt','Datasource':'Allocation Calculation','00','Source Value'],
-	['Calculated Debt','00','Source Value'],
-	['Calculated Equity','Datasource':'Allocation Calculation','00','Source Value'],
-	['Calculated Debt','Datasource':'Allocation Calculation','00','Source Value'];
+['TOTASSET', 'Entity':{'P3', 'WU', 'LM'}, 'Source Value'] =>
+	['Calculated Debt', 'Datasource':'Allocation Calculation', '00', 'Source Value'],
+	['Calculated Debt', '00', 'Source Value'],
+	['Calculated Equity', 'Datasource':'Allocation Calculation', '00', 'Source Value'],
+	['Calculated Debt', 'Datasource':'Allocation Calculation', '00', 'Source Value'];
 #endregion
+
 #region Fixed Portfolio feeding 2 Month Avg Fixed %, Portfolio Fixed 2 Month Avg,xCOUP_RATE_FIX, Debt Rate, 2 Month Avg xCoup_Rate_Fix
-['Total Portfolio','Entity':{'P3','WU'},'Fixed Rate','Datasource':'All Datasources','Source Value']=>
-	['2 Month Avg Fixed %','00','Datasource':'Allocation Calculation','Source Value'],
-	['2 Month Avg Portfolio Fixed','00','Datasource':'Allocation Calculation','Source Value'],
-	['Debt Rate','00','Datasource':'Allocation Calculation','Source Value'],
+['Total Portfolio', 'Entity':{'P3', 'WU'}, 'Fixed Rate', 'Datasource':'All Datasources', 'Source Value'] =>
+	['2 Month Avg Fixed %', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['2 Month Avg Portfolio Fixed', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['Debt Rate', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
 	['2 Month Avg xCoup_Rate_Fix','00','Datasource':'Allocation Calculation','Source Value'],
-	DB('PCR Allocations','2 Month Avg Fixed %','P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS ( 'Time Period', !Time Period, 'Next Calendar Period'),'Source Value'),
-	DB('PCR Allocations','2 Month Avg Portfolio Fixed','P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS ( 'Time Period', !Time Period, 'Next Calendar Period'),'Source Value');
-['2 Month Avg Fixed %','Entity':{'P3','WU'},'Source Value']=>
-	['xCOUP_RATE_FIX','00','Datasource':'Allocation Calculation','Source Value'];
+	DB( 'PCR Allocations', '2 Month Avg Fixed %', 'P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Next Calendar Period' ), 'Source Value' ),
+	DB( 'PCR Allocations', '2 Month Avg Portfolio Fixed', 'P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Next Calendar Period' ), 'Source Value' );
+
+['2 Month Avg Fixed %', 'Entity':{'P3', 'WU'}, 'Source Value']=>
+	['xCOUP_RATE_FIX', '00', 'Datasource':'Allocation Calculation', 'Source Value'];
 #endregion
+
 #region Floating Portfolio feeding 2 Month Avg Floating %, 2 Month Avg Portfolio Floating, xCOUP_RATE_FLT, Debt Rate, 2 Month Avg xCoup_Rate_Flt
-['Total Portfolio','Entity':{'P3','WU'},'Floating Rate','Datasource':'All Datasources','Source Value']=>
-	['2 Month Avg Floating %','00','Datasource':'Allocation Calculation','Source Value'],
-	['2 Month Avg Portfolio Floating','00','Datasource':'Allocation Calculation','Source Value'],
-	['Debt Rate','00','Datasource':'Allocation Calculation','Source Value'],
-	['2 Month Avg xCoup_Rate_Flt','00','Datasource':'Allocation Calculation','Source Value'],
-	DB('PCR Allocations','2 Month Avg Floating %','P3',!Organizational Unit PCR,'00','Allocation Calculation', !Version,ATTRS ( 'Time Period', !Time Period, 'Next Calendar Period'),'Source Value'),
-	DB('PCR Allocations','2 Month Avg Portfolio Floating','P3', !Organizational Unit PCR,'00','Allocation Calculation', !Version, ATTRS ( 'Time Period', !Time Period, 'Next Calendar Period'),'Source Value');
-['2 Month Avg Floating %','Entity':{'P3','WU'},'Source Value']=>
-	['xCOUP_RATE_FLT','00','Datasource':'Allocation Calculation','Source Value'];
+['Total Portfolio', 'Entity':{'P3', 'WU'}, 'Floating Rate', 'Datasource':'All Datasources', 'Source Value'] =>
+	['2 Month Avg Floating %', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['2 Month Avg Portfolio Floating', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['Debt Rate', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['2 Month Avg xCoup_Rate_Flt', '00', 'Datasource':'Allocation Calculation', 'Source Value'],
+	DB( 'PCR Allocations', '2 Month Avg Floating %', 'P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Next Calendar Period' ), 'Source Value' ),
+	DB( 'PCR Allocations', '2 Month Avg Portfolio Floating', 'P3', !Organizational Unit PCR, '00', 'Allocation Calculation', !Version, ATTRS( 'Time Period', !Time Period, 'Next Calendar Period' ), 'Source Value' );
+
+['2 Month Avg Floating %', 'Entity':{'P3', 'WU'}, 'Source Value'] =>
+	['xCOUP_RATE_FLT', '00', 'Datasource':'Allocation Calculation', 'Source Value'];
 #endregion
+
 #region INTEXPENSE feeding '2 Month Avg Int Expense' , Actual to Calculated Interest Expense Variance, Calculated Interest Expense Adjustment
-['INTEXPENSE','Entity':{'P3','WU'},'Source Value']=>
-	['2 Month Avg Int Expense','Datasource':'Allocation Calculation','Source Value'],
-	['Actual to Calculated Interest Expense Variance','Entity':'P3','00000-P3','Datasource':'Allocation Calculation','00','Source Value'],
-	['Calculated Interest Expense Adjustment','Entity':'P3','Datasource':'Allocation Calculation','00','Source Value'],
-	['Actual to Calculated Interest Expense Variance 2nd Round','Entity':'P3','00000-P3','Datasource':'Allocation Calculation','00','Source Value'],
-	['Calculated Interest Expense Adjustment 2nd Round','Entity':'P3','Datasource':'Allocation Calculation','00','Source Value'];
-['First Interest Expense Allocation','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=>
-	['Calculated Interest Expense Adjustment','Entity':'P3','Datasource':'Allocation Calculation','00'],
-	['Calculated Interest Expense Adjustment','Entity':'WU','Datasource':'Allocation Calculation','00'];
-['Second Interest Expense Allocation','Entity':{'P3','WU'},'00','Datasource':'Allocation Calculation','Source Value']=>
-	['Calculated Interest Expense Adjustment 2nd Round','Entity':'P3','Datasource':'Allocation Calculation','00'],
-	['Calculated Interest Expense Adjustment 2nd Round','Entity':'WU','Datasource':'Allocation Calculation','00'];
+['INTEXPENSE', 'Entity':{'P3', 'WU'}, 'Source Value'] =>
+	['2 Month Avg Int Expense', 'Datasource':'Allocation Calculation', 'Source Value'],
+	['Actual to Calculated Interest Expense Variance', 'Entity':'P3', '00000-P3', 'Datasource':'Allocation Calculation', '00', 'Source Value'],
+	['Calculated Interest Expense Adjustment', 'Entity':'P3', 'Datasource':'Allocation Calculation', '00', 'Source Value'],
+	['Actual to Calculated Interest Expense Variance 2nd Round', 'Entity':'P3', '00000-P3', 'Datasource':'Allocation Calculation', '00', 'Source Value'],
+	['Calculated Interest Expense Adjustment 2nd Round', 'Entity':'P3', 'Datasource':'Allocation Calculation', '00', 'Source Value'];
+
+['First Interest Expense Allocation', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] =>
+	['Calculated Interest Expense Adjustment', 'Entity':'P3', 'Datasource':'Allocation Calculation', '00'],
+	['Calculated Interest Expense Adjustment', 'Entity':'WU', 'Datasource':'Allocation Calculation', '00'];
+
+['Second Interest Expense Allocation', 'Entity':{'P3', 'WU'}, '00', 'Datasource':'Allocation Calculation', 'Source Value'] =>
+	['Calculated Interest Expense Adjustment 2nd Round', 'Entity':'P3', 'Datasource':'Allocation Calculation', '00'],
+	['Calculated Interest Expense Adjustment 2nd Round', 'Entity':'WU', 'Datasource':'Allocation Calculation', '00'];
 #endregion
+
 #region Current Month Portfolio feeding 2 Month Avg Portfolio
-['Total Portfolio','Entity':'P3 and WU','Source Value']=>
-	['2 Month Avg Portfolio','Datasource':'Allocation Calculation','Source Value'];
+['Total Portfolio', 'Entity':'P3 and WU', 'Source Value']=>
+	['2 Month Avg Portfolio', 'Datasource':'Allocation Calculation', 'Source Value'];
 #endregion
 #endregion
 
